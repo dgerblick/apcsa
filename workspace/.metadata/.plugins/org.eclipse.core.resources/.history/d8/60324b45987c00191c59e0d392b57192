@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+h1 {
+	font-size: 42pt;
+	text-align: center;
+	margin-top: 16pt;
+	margin-bottom: 16pt;
+}
+
+h2 {
+	font-size: 24pt;
+	text-align: center;
+	margin: auto;
+}
+
+h3 {
+	font-size: 18pt;
+	margin-top: 12pt;
+}
+
+p {
+	font-size: 16pt;
+	line-size: 22pt;
+	margin-top: 0pt;
+	margin-bottom: 8pt;
+	margin-left: 4pt;
+}
+
+a {
+	color: black;
+	text-decoration: none;
+}
+
+ul {
+	margin-top: 8pt;
+	margin-bottom: 16pt;
+}
+
+li {
+	font-size: 16pt;
+	margin-top: 0pt;
+	margin-bottom: 0pt;
+}
+
+.return {
+	color: blue;
+	font-size: 10pt;
+	margin: auto;
+}
+
+.list {
+	color: blue;
+	text-decoration: underline;
+	text-align: right;
+}
+
+.piece {
+	margin: auto;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+.column, .piece {
+  float: left;
+  width: 49%;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+</style>
+</head>
+<body>
+
+<a name="top" />
+<h1>Help Page</h1>
+<p>Click on a link to see Help about that topic</p>
+
+<h2>How to play</h2>
+<ul>
+	<li><a href="win" class="list">The Window</a></li>
+	<li><a href="brd" class="list">The Board</a></li>
+	<li><a href="msg" class="list">Messages</a></li>
+</ul>
+<h2>Game Pieces</h2>
+<ul>
+	<li><a href="king" class="list">King</a></li>
+	<li><a href="queen" class="list">Queen</a></li>
+	<li><a href="rook" class="list">Rook</a></li>
+	<li><a href="bishop" class="list">Bishop</a></li>
+	<li><a href="knight" class="list">Knight</a></li>
+	<li><a href="pawn" class="list">Pawn</a></li>
+</ul>
+
+<hr><hr>
+<br><h2>How to play</h2><br>
+<hr>
+
+<a name="win" />
+<a href="top" class="return">Top</a>
+<h2>The Window</h2>
+<p>The window is divided into four parts, the <a href="rbn">Ribbon</a>, the <a href="brd">Board</a>, the <a href="msg">Message View</a>, and the <a href="sdv">Side view</a></p>
+
+<hr>
+
+<a name="brd" />
+<a href="top" class="return">Top</a>
+<h2>The Board</h2>
+<p>The board shows all of the current pieces and their positions. To select a piece, click it. The square the piece is on and any squares the piece can move too are highlighted yellow. Click on one of those spaces to move the piece there.</p>
+
+<hr>
+
+<a name="msg" />
+<a href="top" class="return">Top</a>
+<h2>Messages</h2>
+<p>The message view is located below the <a href="brd">Board</a> and shows information such as whose turn it is, if someone is in check, and any other actions needed to be taken by the player.</p>
+
+
+
+<hr>
+
+<hr>
+<br><h2>Game Pieces</h2><br>
+<hr>
+
+<a name="king" />
+<a href="top" class="return">Top</a>
+<table>
+</table
+<div class="row">
+  <div class="column"><h2>King</h2></div>
+  <div class="piece">&#x2654&#x265A;</div>
+</div>
+<h3>Movement</h3>
+<p>The King can move only one space in any direction--vertically, horizontally or diagonally. It cannot move to or be in any position in which it can be captured the following turn or to a space occupied by a friendly piece.</p>
+<p>Castling: If there are no pieces between The King and either one of the <a href="rook">Rooks</a> and neither piece has moved, you may move the King two spaces towards the <a href="rook">Rook</a> and move the <a href="rook">Rook</a> to the other side of the King. This cannot be done if the King is in Check.</p>
+<h3>Check and Checkmate</h3>
+<p>If the King is in a position to be captured, it is in check. You cannot end your turn with your King in check. If your King is in check and no moves are available, the game is over and you lose.</p>
+
+<hr>
+
+<a name="queen" />
+<a href="top" class="return">Top</a>
+<h2>Queen</h2>
+<h3>Movement</h3>
+<p>The Queen can move in any direction--vertically, horizontally or diagonally--in a straight line until it reaches the end of the board or another piece.</p>
+<p>Often, when a <a href="pawn">Pawn</a> is promoted by moving to the other side of the board, it is promoted to a Queen.</p>
+
+<hr>
+
+<a name="rook" />
+<a href="top" class="return">Top</a>
+<h2>Rook</h2>
+<h3>Movement</h3>
+<p>The Rook can move vertically or horizontally in a straight line until it reaches the end of the board or another piece</p>
+<p>Castling: If there are no pieces between The <a href="king">King</a> and either one of the Rooks and neither piece has moved, you may move the <a href="king">King</a> two spaces towards the Rook and move the Rook to the other side of the <a href="king">King</a>. This cannot be done if the <a href="king">King</a> is in Check.</p>
+
+<hr>
+
+<a name="bishop" />
+<a href="top" class="return">Top</a>
+<h2>Bishop</h2>
+<h3>Movement</h3>
+<p>The Bishop can move diagonally in a straight line until it reaches the end of the board or another piece.</p>
+
+<hr>
+
+<a name="knight" />
+<a href="top" class="return">Top</a>
+<h2>Knight</h2>
+<h3>Movement</h3>
+<p>The Knight can either move horizontally two squares and vertically one square, or vertically two squares and horizontally one square.</p>
+<p>The Knight is the only piece that can "hop over" other pieces.</p>
+
+<hr>
+
+<a name="pawn" />
+<a href="top" class="return">Top</a>
+<h2>Pawn</h2>
+<h3>Movement</h3>
+<p>The Pawn can only one one space forward at a time, with the exception of its first move, in which it can move two spaces.</p>
+<h3>Capturing</h3>
+<p>The Pawn can usually only capture opposing pieces diagonally</p>
+<p>En Passant: If an opposing pawn moves two spaces forward to an adjacent square to your pawn, you may capture the pawn as if it had only moved one square. This must be done on the very next turn.</p>
+<h3>Promotion</h3>
+<p>If a Pawn moves to the opposite end of the board, you may replace that Pawn with any other piece.</p>
+
+</body>
+</html>

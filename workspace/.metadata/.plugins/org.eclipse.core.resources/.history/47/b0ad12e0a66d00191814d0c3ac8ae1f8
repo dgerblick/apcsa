@@ -1,0 +1,122 @@
+package chess;
+
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+public class Pawn extends GamePiece {
+
+	public Pawn(int x, boolean team) {
+		super(x, team ? 6 : 1, team);
+		setValue(team ? -1 : 1);
+	}
+	
+	public Pawn(int x, int y, boolean team) {
+		super(x, y, team);
+		setValue(team ? -1 : 1);
+	}
+	
+	@Override
+	public void transform(GameMove move) {
+		super.transform(move);
+		if (move.specialTarget != null) {
+			board.pieces[getPieceIndex(move.specialTarget)] = new DeadPiece(move.specialTarget);
+			incrementMoved();
+		}
+		if (getY() == (getTeam() ? 0 : 7)) {
+			char c = getTeam() ? '\u265b' : '\u2655';
+			char[] options = new char[5];
+			for (int i = 0; i < options.length; i++)
+				options[i] = (char) (c + i);
+			
+			JLabel label = (JLabel) masterPanel.getComponent(1);
+			//Point p = getBoardPos(board.spaceSize);
+			//board.getGraphics().drawChars(options, 0, options.length, p.x, p.y);
+			//MouseListener defaultMouseListener = (MouseListener) board.getMouseListeners()[0];
+			//label.removeMouseListener(defaultMouseListener);
+			masterPanel.add(new PawnUpgrade(getPieceIndex(this), masterPanel, options));
+			/*char c = getTeam() ? '\u265b' : '\u2655';
+			Object[] options = new Object[4];
+			for (int i = 0; i < options.length; i++)
+				options[i] = (char) (c + i);
+			JPanel optionBox = new JPanel();
+			//masterPanel.add(optionBox);
+			masterPanel.remove(masterPanel.getComponent(0));
+			//optionBox.set
+			int index = JOptionPane.showOptionDialog(optionBox, "Please select a piece", "Pawn Promotion", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[4]);
+			switch (index) {
+			case 0:
+				pieces[getPieceIndex(pieces, this)] = new Queen(getX(), getY(), getTeam());
+				break;
+			case 1:
+				pieces[getPieceIndex(pieces, this)] = new Rook(getX(), getY(), getTeam());
+				break;
+			case 2:
+				pieces[getPieceIndex(pieces, this)] = new Bishop(getX(), getY(), getTeam());
+				break;
+			case 3:
+				pieces[getPieceIndex(pieces, this)] = new Knight(getX(), getY(), getTeam());
+				break;
+			case 4:
+				pieces[getPieceIndex(pieces, this)] = new Pawn(getX(), getY(), getTeam());
+				break;
+			default:
+				break;
+			}*/
+		}
+	}
+	
+	@Override
+	public List<GameMove> getMoves() {
+		List<GameMove> moves = new ArrayList<GameMove>();		
+		GameMove move;
+		int target;
+		
+		move = new GameMove(0, getTeam() ? -1 : 1); 
+		target = getPieceRelativeTo(move);
+		if (target == -1) {
+			moves.add(move);
+			move = new GameMove(0, getTeam() ? -2 : 2);
+			target = getPieceRelativeTo(move);
+			if (target == -1 && getY() == (getTeam() ? 6 : 1))
+				moves.add(move);
+		}
+		
+		move = new GameMove(-1, getTeam() ? -1 : 1);
+		target = getPieceRelativeTo(move);
+		if (target != -1 && board.pieces[target].getTeam() != getTeam())
+			moves.add(move);
+		
+		move = new GameMove(1, getTeam() ? -1 : 1);
+		target = getPieceRelativeTo(move);
+		if (target != -1 && board.pieces[target].getTeam() != getTeam())
+		moves.add(move);
+		
+		move = new GameMove(-1, getTeam() ? -1 : 1);
+		target = getPieceFromPos(getX() - 1, getY());
+		if (target != -1 && board.pieces[target].getTeam() != getTeam() && board.pieces[target].isLastMoved() && pieces[target] instanceof Pawn) {
+			move.specialTarget = board.pieces[target];
+			moves.add(move);
+		}
+		
+		move = new GameMove(1, getTeam() ? -1 : 1);
+		target = getPieceFromPos(getX() + 1, getY());
+		if (target != -1 && board.pieces[target].getTeam() != getTeam() && board.pieces[target].getMoved() == 1 && pieces[target].isLastMoved() && pieces[target] instanceof Pawn) {
+			move.specialTarget = board.pieces[target];
+			moves.add(move);
+		}
+		
+		return moves;
+	}
+
+	@Override
+	public String getChar() {
+		return getTeam() ? "\u265f" : "\u2659";
+	}
+
+}

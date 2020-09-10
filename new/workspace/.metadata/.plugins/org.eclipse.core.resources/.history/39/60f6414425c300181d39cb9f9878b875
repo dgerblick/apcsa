@@ -1,0 +1,19 @@
+package kareltherobot;
+
+import java.awt.Color;
+
+public class ChessBot extends SmartBot_DanielGerblick {
+
+	public enum PIECE_TYPE {
+		PAWN, ROOK, KNIGHT, BISHOP, QUEEN, KING
+	}
+	
+	public ChessBot(int street, int avenue, Direction direction, int beepers) {
+		super(street, avenue, direction, beepers);
+	}
+
+	public ChessBot(int street, int avenue, Direction direction, int beepers, Color color) {
+		super(street, avenue, direction, beepers, color);
+	}
+
+}

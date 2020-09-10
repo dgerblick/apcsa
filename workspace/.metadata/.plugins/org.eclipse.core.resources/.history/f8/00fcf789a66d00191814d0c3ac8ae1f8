@@ -1,0 +1,87 @@
+package chess;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class King extends GamePiece {
+		
+	public King(boolean team) {
+		super(4, team ? 7 : 0, team);
+		setValue(0);
+	}
+	
+	public King(int x, int y, boolean team) {
+		super(x, y, team);
+		setValue(0);
+	}
+	
+	@Override
+	public void transform(GameMove move) {
+		if (move.specialTarget == null) {
+			super.transform(pieces, move);
+		} else {
+			setX(getX() + move.deltaX);
+			move.specialTarget.setX(move.specialTarget.getX() + (move.deltaX > 0 ? -2 : 3));
+			
+			incrementMoved();
+		}
+	}
+	
+	@Override
+	public List<GameMove> getMoves() {
+		List<GameMove> moves = new ArrayList<GameMove>();		
+		GameMove move;
+		
+		for (int i = -1; i <= 1; i++) {
+			for (int j = -1; j <= 1; j++) {
+				if (i != 0 || j != 0) {
+					move = new GameMove(i, j);
+					int newX = move.getX(getX());
+					int newY = move.getY(getY());
+					if (newX <= 7 && newX >= 0 && newY >= 0 && newY <= 7)
+						addMove(moves, move);
+				}
+			}
+		}
+		
+		if (getMoved() == 0) {
+			List<GamePiece> castlePieces = new ArrayList<GamePiece>();
+			
+			int[] xPos = { 0, 7 };
+			int index;
+			for (int x : xPos) {
+				index = getPieceAtPos(x, getY());
+				if (index != -1 && board.pieces[index].getMoved() == 0)
+					castlePieces.add(board.pieces[index]);
+			}			
+			
+			for (int i = 0; i < castlePieces.size(); i++) {
+				if (castlePieces.get(i) instanceof Rook && isClear(castlePieces.get(i))) {
+					GameMove castle = new GameMove(this, castlePieces.get(i));
+					castle.specialTarget = castlePieces.get(i);
+					moves.add(castle);
+				}
+			}
+		}
+		
+		return moves;
+	}
+	
+	private boolean isClear(GamePiece target) {
+		if (getX() < target.getX()) {
+			for (int i = getX() + 1; i < target.getX(); i++)
+				if (getPieceAtPos(i, getY()) != -1)
+					return false;
+		} else {
+			for (int i = getX() - 1; i > target.getX(); i--)
+				if (getPieceAtPos(i, getY()) != -1)
+					return false;
+		}
+		return true;
+	}
+	
+	@Override
+	public String getChar() {
+		return getTeam() ? "\u265a" : "\u2654";
+	}
+}

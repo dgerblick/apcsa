@@ -1,0 +1,72 @@
+package chess;
+
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+public class Pawn extends GamePiece {
+
+	public Pawn(int x, boolean team) {
+		super(x, team ? 6 : 1, team);
+		setValue(team ? -1 : 1);
+	}
+	
+	public Pawn(int x, int y, boolean team) {
+		super(x, y, team);
+		setValue(team ? -1 : 1);
+	}
+	
+	@Override
+	public List<GameMove> getMoves() {
+		List<GameMove> moves = new ArrayList<GameMove>();		
+		GameMove move;
+		GamePiece target;
+		
+		move = new GameMove(0, getTeam() ? -1 : 1); 
+		target = board.getPieceRelTo(this, move);
+		if (target == null) {
+			moves.add(move);
+			move = new GameMove(0, getTeam() ? -2 : 2);
+			target = board.getPieceRelTo(this, move);
+			if (target == null && getY() == (getTeam() ? 6 : 1))
+				moves.add(move);
+		}
+		
+		move = new GameMove(-1, getTeam() ? -1 : 1);
+		target = board.getPieceRelTo(this, move);
+		if (target != null && target.getTeam() != getTeam())
+			moves.add(move);
+		
+		move = new GameMove(1, getTeam() ? -1 : 1);
+		target = board.getPieceRelTo(this, move);
+		if (target != null && target.getTeam() != getTeam())
+		moves.add(move);
+		
+		move = new GameMove(-1, getTeam() ? -1 : 1);
+		target = board.getPieceAtPos(getX() - 1, getY());
+		if (target != null && target.getTeam() != getTeam() && target.isLastMoved() && target instanceof Pawn) {
+			move.specialTarget = target;
+			moves.add(move);
+		}
+		
+		move = new GameMove(1, getTeam() ? -1 : 1);
+		target = board.getPieceAtPos(getX() + 1, getY());
+		if (target != null && target.getTeam() != getTeam() && target.getMoved() == 1 && target.isLastMoved() && target instanceof Pawn) {
+			move.specialTarget = target;
+			moves.add(move);
+		}
+		
+		return moves;
+	}
+
+	@Override
+	public String getChar() {
+		return getTeam() ? "\u265f" : "\u2659";
+	}
+
+}

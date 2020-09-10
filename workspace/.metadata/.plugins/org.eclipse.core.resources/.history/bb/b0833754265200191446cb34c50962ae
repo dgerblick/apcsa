@@ -1,0 +1,7 @@
+package gridworld;
+
+import info.gridworld.actor.Critter;
+
+public class CrazyCritter_DanielGerblick extends Critter {
+	
+}

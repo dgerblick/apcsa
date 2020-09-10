@@ -1,0 +1,252 @@
+package chess;
+
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.util.List;
+import java.awt.Point;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+public class Board extends JPanel implements MouseListener {
+	
+	private static final long serialVersionUID = -1080752877644144455L;
+	private final Color c1 = new Color(51, 204, 255);
+	private final Color c2 = new Color(204, 255, 255);
+	private final Color c3 = new Color(255, 255, 0, 155);
+	private final Color c4 = new Color(255, 255, 0, 50);
+
+	public int spaceSize;
+	
+	public GamePiece[] pieces;
+	private int active;
+	private List<GameMove> moves;
+	private JLabel display;
+	
+	public boolean turn;
+	
+	public Board(JLabel label, int spaceSize) {
+		super();
+		this.spaceSize = spaceSize;
+		display = label;
+		display.setText((turn ? "Black" : "White") + "'s turn");
+		
+		setPreferredSize(new Dimension(spaceSize * 8, spaceSize * 8));
+		display.setSize(getWidth(), spaceSize);
+		turn = false;
+		active = -1;
+		addMouseListener(this);
+		
+		GamePiece.board = this;
+	}
+	
+	public void paint(Graphics g) {
+		g.setColor(c1);
+		g.fillRect(0, 0, spaceSize * 8, spaceSize * 8);
+		
+		g.setColor(c2);	
+		for (int i = 0; i < 8; i++)
+			for (int j = 0; j < 8; j += 2)
+				g.fillRect(spaceSize * (j + i % 2), spaceSize * i, spaceSize, spaceSize);
+		
+		if (active != -1) {
+			g.setColor(c3);
+			for (GameMove move : moves)
+				g.fillRect(spaceSize * move.getX(pieces[active].getX()), spaceSize * move.getY(pieces[active].getY()), spaceSize, spaceSize);
+			g.fillRect(spaceSize * pieces[active].getX(), spaceSize * pieces[active].getY(), spaceSize, spaceSize);
+		}
+		
+		Point p;
+		g.setColor(Color.BLACK);
+		g.setFont(g.getFont().deriveFont((float) spaceSize)); 
+		for (GamePiece piece : pieces) {
+			p = piece.getBoardPos(spaceSize);
+			g.drawString(piece.getChar(), p.x, p.y);
+		}
+		
+		
+		//g.drawString(display, 0, spaceSize);
+		//GamePiece.printPieceInfo(pieces);
+	}
+	
+	public void updateBoard(GamePiece[] pieces) {
+		this.pieces = pieces;
+		repaint();
+	}
+	
+	public int getPieceAtPos(int x, int y) {
+		for (int i = 0; i < pieces.length; i++)
+			if (pieces[i].posEquals(x, y) && !pieces[i].isTakenTesting())
+				return i;
+			
+		return -1;
+	}
+	
+	public int getPieceRelTo(GamePiece piece, GameMove move) {
+		int x = move.getX(piece.getX());
+		int y = move.getY(piece.getY());
+		return getPieceAtPos(x, y);
+	}
+	
+	public int getPieceIndex(GamePiece piece) {
+		if (piece != null) {
+			for (int i = 0; i < pieces.length; i++)
+				if (pieces[i].posEquals(piece))
+					return i;
+		}
+		return -1;
+	}
+	
+	public boolean testCheck(boolean team) {
+		for (GamePiece piece : pieces) {
+			if (piece.getTeam() != team && !(piece instanceof King)) {
+				List<GameMove> moves = piece.getMoves();
+				if (moves != null) {
+					for (GameMove move : moves) {
+						int target = getPieceRelTo(piece, move);
+						if (target != -1 && pieces[target].getTeam() == team && pieces[target] instanceof King)
+							return true;
+					}
+				}
+			}
+		}
+		
+		return false;
+	}
+	
+	public boolean testCheckmate(boolean team) {
+		for (GamePiece piece : pieces) {
+			if (piece.getTeam() == team) {
+				if (!piece.getLegalMoves().isEmpty())
+					return false;
+			}
+		}
+
+		return true;
+	}
+	
+	public void transform(GamePiece piece, GameMove move) {
+		if (piece instanceof King && move.specialTarget != null) {
+			piece.setPos(piece.getX() + move.deltaX, piece.getY());
+			move.specialTarget.setPos(move.specialTarget.getX() + (move.deltaX > 0 ? -2 : 3), move.specialTarget.getY());
+			
+			piece.incrementMoved();
+		} else {
+			int index = getPieceRelTo(piece, move);
+			if (index != -1 && pieces[index].getTeam() != piece.getTeam()) {
+				pieces[index] = new DeadPiece(pieces[index]);
+				System.out.println("Taking piece");
+			}
+			
+			piece.setPos(move.getX(piece.getX()), move.getY(piece.getY()));
+			
+			piece.incrementMoved();
+			piece.setLastMoved(true);
+		}
+		
+		if (piece instanceof Pawn) {
+			if (move.specialTarget != null) {
+				pieces[getPieceIndex(move.specialTarget)] = new DeadPiece(move.specialTarget);
+				piece.incrementMoved();
+			}
+			if (piece.getY() == (piece.getTeam() ? 0 : 7)) {
+				char c = piece.getTeam() ? '\u265b' : '\u2655';
+				char[] options = new char[5];
+				for (int i = 0; i < options.length; i++)
+					options[i] = (char) (c + i);
+				this.add(new PawnUpgrade(getPieceIndex(piece), this, options));
+			}
+		}
+	}
+	
+	public void testTransform(GamePiece piece, GameMove move) {
+		int index = getPieceIndex(piece);
+		for (int i = 0; i < pieces.length; i++)
+			pieces[i].setTakenTesting(false);
+		if (index != -1)
+			pieces[index].setTakenTesting(true);
+		piece.setPos(move.getX(piece.getX()), move.getY(piece.getY()));
+
+	}
+	
+	@Override
+	public void mouseClicked(MouseEvent me) {
+		int clickX = me.getX() / spaceSize;
+		int clickY = me.getY() / spaceSize;
+
+		if (active == -1) {
+			active = getPieceAtPos(clickX, clickY);
+			if (active != -1)
+				moves = pieces[active].getLegalMoves();
+		} else {
+			for (GameMove move : moves) {
+				if (move.getX(pieces[active].getX()) == clickX && move.getY(pieces[active].getY()) == clickY) {
+					for (int i = 0; i < pieces.length; i++)
+						pieces[i].setLastMoved(false);					
+					transform(pieces[active], move);
+					
+					display.setText((turn ? "White" : "Black") + "'s turn");
+					
+					if (testCheck(turn)) {
+						display.setText("Check! " + display.getText());
+						if (testCheckmate(turn)) {
+							display.setText(String.format("Checkmate! %s wins!", turn ? "White" : "Black"));
+							this.removeMouseListener(this);
+						}
+					}
+					turn = !turn;
+					moves = null;
+					break;
+				}
+			}
+		}
+		
+		
+		
+		
+		/*
+		
+		if (active == -1) {
+			active = getPieceAtPos(clickX, clickY);
+			if (active != -1) {
+				moves = pieces[active].getLegalMoves();
+				if (turn != pieces[active].getTeam())
+					active = -1;
+			}
+			if (moves == null)
+				active = -1;
+		} else {
+			for (GameMove move : moves) {
+				if(move.getX(pieces[active].getX()) == clickX && move.getY(pieces[active].getY()) == clickY) {
+					for (int i = 0; i < pieces.length; i++)
+						pieces[i].setLastMoved(false);					
+					transform(pieces[active], move);
+					turn = !turn;
+					
+					display.setText((turn ? "Black" : "White") + "'s turn");		
+					if (testCheck(turn)) {
+						display.setText("Check! " + display.getText());
+						if (testCheckmate(turn)) {
+							display.setText(String.format("Checkmate! %s wins!", turn ? "White" : "Black"));
+							this.removeMouseListener(this);
+						}
+					}
+					
+					break;
+				}
+			}
+			active = -1;
+			moves = null;
+		}*/
+		
+		repaint();
+	}
+	
+	@Override public void mouseEntered(MouseEvent me) { }
+	@Override public void mouseExited(MouseEvent me) { }
+	@Override public void mousePressed(MouseEvent me) { }
+	@Override public void mouseReleased(MouseEvent me) { }
+}

@@ -1,0 +1,17 @@
+package kareltherobot;
+
+import java.awt.Color;
+
+import kareltherobot.ChessBot.*;
+
+public class ChessBotDriver implements Directions {
+
+	public static void main(String[] args) {
+		World.setVisible(true);
+		World.showSpeedControl(true);
+		
+		ChessBot c = new ChessBot(1, 1, North, 0);
+		UrRobot karel = new UrRobot(1, 1, North, 0, new Color(0, 0, 255, 255));
+	}
+
+}

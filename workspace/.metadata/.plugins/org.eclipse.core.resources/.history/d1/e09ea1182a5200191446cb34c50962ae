@@ -1,0 +1,15 @@
+package gridworld;
+
+import java.awt.Color;
+
+import info.gridworld.actor.Critter;
+
+public class CrazyCritter_DanielGerblick extends Critter {
+	public CrazyCritter_DanielGerblick() {
+		super();
+	}
+	
+	public CrazyCritter_DanielGerblick(Color c) {
+		super(c);
+	}
+}

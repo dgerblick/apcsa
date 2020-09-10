@@ -1,0 +1,9 @@
+package kareltherobot;
+
+public class BeeperSquareSquaredTester_DanielGerblick {
+
+	public BeeperSquareSquaredTester_DanielGerblick() {
+		// TODO Auto-generated constructor stub
+	}
+
+}

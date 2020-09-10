@@ -1,0 +1,226 @@
+package chess;
+
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.Toolkit;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.JButton;
+import javax.swing.JEditorPane;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSlider;
+import javax.swing.JTextArea;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
+
+public class GameWindow extends JFrame {
+	private static final long serialVersionUID = 1L;
+	
+	public static void main(String[] args) {
+		GameWindow gw = new GameWindow();
+		
+		gw.setVisible(true);
+		gw.pack();
+		gw.setResizable(false);
+		gw.setLocationRelativeTo(null);
+	}
+	
+	JPanel mainPanel;
+	JPanel sidePanel;
+	JPanel buttonPanel;
+	JLabel label;
+	Board board;
+	JButton newGame;
+	JButton settings;
+	JButton help;
+	JButton quit;
+	
+	public static final int SPACE_SIZE = 92;
+	
+	public GameWindow() {
+		super("Chess");
+		mainPanel = new JPanel();
+		sidePanel = new JPanel();
+		buttonPanel = new JPanel();
+		label = new JLabel();
+		newGame = new JButton("New Game");
+		settings = new JButton("Settings");
+		help = new JButton("Help");
+		quit = new JButton("Quit");
+		newGame();
+		
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		label.setFont(new Font(label.getFont().getName(), Font.BOLD, SPACE_SIZE / 2));
+		
+		Font buttonFont = new Font(label.getFont().getName(), Font.BOLD, SPACE_SIZE / 4);
+		newGame.setFont(buttonFont);
+		settings.setFont(buttonFont);
+		help.setFont(buttonFont);
+		quit.setFont(buttonFont);
+
+		
+		newGame.addActionListener(e -> newGameButton());
+		settings.addActionListener(e -> settingsButton());
+		help.addActionListener(e -> helpButton());
+		quit.addActionListener(e -> quitButton());
+		
+		sidePanel.setPreferredSize(new Dimension(SPACE_SIZE * 4, SPACE_SIZE * 8));
+		
+		buttonPanel.setLayout(new GridLayout(1, 3));
+		buttonPanel.add(newGame);
+		buttonPanel.add(settings);
+		buttonPanel.add(help);
+		buttonPanel.add(quit);
+				
+		mainPanel.setLayout(new BorderLayout());
+		mainPanel.add(board, BorderLayout.CENTER);
+		mainPanel.add(label, BorderLayout.SOUTH);
+		mainPanel.add(buttonPanel, BorderLayout.NORTH);
+		mainPanel.add(sidePanel, BorderLayout.EAST);
+		add(mainPanel);
+	}
+	
+	private void newGame() {
+		board = new Board(label, SPACE_SIZE);
+		//board.setDisplayMode(3);
+		List<GamePiece> pieces = new ArrayList<GamePiece>();
+		boolean[] tf = { true, false };
+		
+		GamePiece.setMasterPanel(mainPanel);
+		
+		for (boolean team : tf) {
+			for (int i = 0; i < 8; i++)
+				pieces.add(new Pawn(i, team));
+			for (boolean right : tf) {
+				pieces.add(new Rook(right, team));
+				pieces.add(new Knight(right, team));
+				pieces.add(new Bishop(right, team));
+			}
+			pieces.add(new Queen(team));
+			pieces.add(new King(team));
+		}
+		
+		GamePiece[] gamePieces = pieces.toArray(new GamePiece[0]);
+		board.updateBoard(gamePieces);
+	}
+	
+	private void newGameButton() {
+		sidePanel.removeAll();
+		
+		JTextArea txt = new JTextArea("Are you sure you want to start a new game?");
+		JButton confirm = new JButton("Yes");
+		JButton cancel = new JButton("Cancel");
+		
+		txt.setFont(label.getFont());
+		confirm.setFont(label.getFont());
+		cancel.setFont(label.getFont());
+		
+		txt.setSize(sidePanel.getSize());
+		txt.setLineWrap(true);
+		txt.setBorder(null);
+		txt.setOpaque(false);
+		txt.setWrapStyleWord(true);
+		txt.setEditable(false);
+		
+		confirm.addActionListener(e -> {
+			mainPanel.remove(board);
+			sidePanel.removeAll();
+			newGame();
+			mainPanel.add(board, BorderLayout.CENTER);
+			validate();
+		});
+		cancel.addActionListener(e -> {
+			sidePanel.removeAll();
+			repaint();
+		});
+		
+		sidePanel.add(txt);
+		sidePanel.add(confirm);
+		sidePanel.add(cancel);
+		
+		sidePanel.revalidate();
+		repaint();
+	}
+	
+	private void settingsButton() {
+		sidePanel.removeAll();
+		JSlider size = new JSlider(1, Toolkit.getDefaultToolkit().getScreenSize().width / 12, board.spaceSize);
+		JLabel sizeVal = new JLabel();
+		size.addChangeListener(new ChangeListener() {
+			@Override
+			public void hyperlinkUpdate(HyperlinkEvent he) {
+				 if (HyperlinkEvent.EventType.ACTIVATED.equals(he.getEventType()))
+                     editorPane.scrollToReference(he.getDescription());
+             }
+
+		}
+		sidePanel.add(size);
+		revalidate();
+	}
+	
+	private void quitButton() {
+		sidePanel.removeAll();
+		
+		JTextArea txt = new JTextArea("Are you sure you want to Quit?");
+		JButton confirm = new JButton("Yes");
+		JButton cancel = new JButton("Cancel");
+		
+		txt.setFont(label.getFont());
+		confirm.setFont(label.getFont());
+		cancel.setFont(label.getFont());
+		
+		txt.setSize(sidePanel.getSize());
+		txt.setLineWrap(true);
+		txt.setBorder(null);
+		txt.setOpaque(false);
+		txt.setWrapStyleWord(true);
+		txt.setEditable(false);
+		
+		confirm.addActionListener(e -> dispose());
+		cancel.addActionListener(e -> {
+			sidePanel.removeAll();
+			repaint();
+		});
+		
+		sidePanel.add(txt);
+		sidePanel.add(confirm);
+		sidePanel.add(cancel);
+		
+		sidePanel.revalidate();
+		repaint();
+	}
+	
+	private void helpButton() {
+		sidePanel.removeAll();
+		try {
+			JEditorPane editorPane = new JEditorPane("text/html", new String(Files.readAllBytes(Paths.get("resources/help.html")), StandardCharsets.UTF_8));
+			editorPane.setEditable(false);
+			editorPane.setSize(sidePanel.getSize());
+			JScrollPane scrollPane = new JScrollPane(editorPane);
+			scrollPane.setSize(sidePanel.getSize());
+			sidePanel.add(scrollPane);
+			repaint();
+			editorPane.addHyperlinkListener(new HyperlinkListener() {
+				@Override
+				public void hyperlinkUpdate(HyperlinkEvent he) {
+					 if (HyperlinkEvent.EventType.ACTIVATED.equals(he.getEventType()))
+                         editorPane.scrollToReference(he.getDescription());
+                 }
+			});
+			editorPane.scrollToReference("top");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+}

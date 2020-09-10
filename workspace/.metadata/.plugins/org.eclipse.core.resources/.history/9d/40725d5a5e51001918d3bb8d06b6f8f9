@@ -1,0 +1,23 @@
+package gridworld;
+
+import java.awt.Color;
+
+import info.gridworld.actor.Critter;
+import info.gridworld.actor.Rock;
+import info.gridworld.grid.Grid;
+
+public class ThanosCritter extends Critter {
+	public ThanosCritter() {
+		
+	}
+	
+	public void putSelfInGrid(Grid<Actor> gr, Location loc) {
+		grid.add(new InfinityRock(Color.ORANGE));
+	}
+}
+
+class InfinityRock extends Rock {
+	public InfinityRock(Color c) {
+		super(c);
+	}
+}

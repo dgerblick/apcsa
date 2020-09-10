@@ -1,0 +1,9 @@
+package kareltherobot;
+
+public class CarpetLayerTester_DanielGerblick {
+
+	public CarpetLayerTester_DanielGerblick() {
+		// TODO Auto-generated constructor stub
+	}
+
+}

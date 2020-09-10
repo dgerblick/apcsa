@@ -1,0 +1,17 @@
+package kareltherobot;
+
+import java.awt.Color;
+
+public class CarpetLayer_DanielGerblick extends SmartBot_DanielGerblick {
+
+	public CarpetLayer_DanielGerblick(int street, int avenue, Direction direction, int beepers) {
+		super(street, avenue, direction, beepers);
+		// TODO Auto-generated constructor stub
+	}
+
+	public CarpetLayer_DanielGerblick(int street, int avenue, Direction direction, int beepers, Color color) {
+		super(street, avenue, direction, beepers, color);
+		// TODO Auto-generated constructor stub
+	}
+
+}

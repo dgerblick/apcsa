@@ -1,0 +1,81 @@
+package chess;
+
+import java.awt.FlowLayout;
+import java.awt.LayoutManager;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+public class PawnUpgrade extends JPanel implements MouseListener {
+	
+	private String orgStr;
+	private GamePiece[] pieces;
+	private int index;
+	private JPanel panel;
+	private JLabel label;
+	private Board board;
+	private char[] names;
+	
+	public PawnUpgrade(int index, JPanel panel, char[] names) {
+		super(new FlowLayout(FlowLayout.CENTER, 0, 0));
+		this.pieces = pieces;
+		this.index = index;
+		this.panel = panel;
+		this.names = names;
+		label = (JLabel) panel.getComponent(1);
+		board = (Board) panel.getComponent(0);
+		FlowLayout layout = (FlowLayout) getLayout();
+		layout.setVgap(0);
+		for (char c : names) {
+			JLabel button = new JLabel(c + "");
+			button.setFont(label.getFont());
+			button.setSize(getWidth() / 4, getHeight());
+			button.addMouseListener(this);
+			add(button);
+		}
+		panel.remove(label);
+		panel.add(this);
+		
+		//System.out.println(size());
+		panel.repaint();
+		panel.getComponent(0).addMouseListener((Board) panel.getComponent(0));
+		((JFrame) panel.getTopLevelAncestor()).pack();
+		((JFrame) panel.getTopLevelAncestor()).repaint();
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		int indexClicked = ((JLabel) e.getSource()).getText().charAt(0) - names[0];
+		switch (indexClicked) {
+		case 0:
+			pieces[index] = new Queen(pieces[index].getX(), pieces[index].getY(), pieces[index].getTeam());
+			break;
+		case 1:
+			pieces[index] = new Rook(pieces[index].getX(), pieces[index].getY(), pieces[index].getTeam());
+			break;
+		case 2:
+			pieces[index] = new Bishop(pieces[index].getX(), pieces[index].getY(), pieces[index].getTeam());
+			break;
+		case 3:
+			pieces[index] = new Knight(pieces[index].getX(), pieces[index].getY(), pieces[index].getTeam());
+			break;
+		default:
+			break;
+		}
+		panel.remove(this);
+		panel.add(label);
+		board.addMouseListener(board);
+		if (board.testCheck(board.turn))
+			label.setText("Check! " + label.getText());	
+		
+		((JFrame) panel.getTopLevelAncestor()).repaint();
+	}
+
+	@Override public void mouseEntered(MouseEvent arg0) { }
+	@Override public void mouseExited(MouseEvent arg0) { }
+	@Override public void mousePressed(MouseEvent arg0) { }
+	@Override public void mouseReleased(MouseEvent arg0) { }
+}

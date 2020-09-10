@@ -1,0 +1,32 @@
+package kareltherobot;
+
+public class MazeWalkerTester_DanielGerblick implements Directions {
+	public static void main(String args[]) {
+		World.setVisible(true);
+		World.showSpeedControl(true);
+		World.readWorld("mazeWalkerWorld.txt");
+		World.readWorld("worldFiles\\mazeWalkerWorld.txt");
+
+		MazeWalker_DanielGerblick bob;
+		bob = new MazeWalker_DanielGerblick(2, 2, North, 0);
+		bob.followWallRight();
+		bob.followWallRight();
+		bob.turnOff();
+
+		bob = new MazeWalker_DanielGerblick(7, 2, North, 0);
+		bob.followWallRight();
+		bob.followWallRight();
+		bob.turnOff();
+
+		bob = new MazeWalker_DanielGerblick(7, 7, North, 0);
+		bob.followWallRight();
+		bob.followWallRight();
+		bob.turnOff();
+
+		bob = new MazeWalker_DanielGerblick(2, 7, North, 0);
+		bob.followWallRight();
+		bob.followWallRight();
+		bob.turnOff();
+
+	}
+}

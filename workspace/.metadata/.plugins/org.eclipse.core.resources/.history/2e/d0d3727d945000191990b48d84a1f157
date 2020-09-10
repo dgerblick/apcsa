@@ -1,0 +1,107 @@
+package numberbug;
+
+import java.awt.Color;
+
+import info.gridworld.actor.Actor;
+import info.gridworld.actor.Bug;
+import info.gridworld.grid.Grid;
+import info.gridworld.grid.Location;
+
+public class NumberBug_DanielGerblick extends Bug {
+
+	private Number_DanielGerblick number;
+
+	public NumberBug_DanielGerblick() {
+		super();
+		number = new Number_DanielGerblick(0, Color.RED, Color.BLUE);
+	}
+
+	public NumberBug_DanielGerblick(int num) {
+		super();
+		number = new Number_DanielGerblick(num, Color.RED, Color.BLUE);
+	}
+
+	public NumberBug_DanielGerblick(int num, Color color) {
+		super(color);
+		int r = 255 - color.getRed();
+		int g = 255 - color.getGreen();
+		int b = 255 - color.getBlue();
+		number = new Number_DanielGerblick(num, color, new Color(r, g, b));
+	}
+
+	public NumberBug_DanielGerblick(Color color) {
+		super(color);
+		int r = 255 - color.getRed();
+		int g = 255 - color.getGreen();
+		int b = 255 - color.getBlue();
+		number = new Number_DanielGerblick(0, color, new Color(r, g, b));
+	}
+
+	public NumberBug_DanielGerblick(Color color, Color textColor) {
+		super(color);
+		number = new Number_DanielGerblick(0, color, textColor);
+	}
+
+	public NumberBug_DanielGerblick(int num, Color color, Color textColor) {
+		super(color);
+		number = new Number_DanielGerblick(num, color, textColor);
+	}
+
+	public void act() {
+		if (canMove()) {
+			Location loc = getLocation();
+			move();
+			number.putSelfInGrid(getGrid(), loc);
+			number = new Number_DanielGerblick(number);
+		} else if (isTrapped()) {
+			Location loc = getLocation();
+			teleport();
+			number.putSelfInGrid(getGrid(), loc);
+			number = new Number_DanielGerblick(number);
+		} else {
+			turn();
+		}
+	}
+
+	private boolean isTrapped() {
+		Grid grid = getGrid();
+		Location currLoc = getLocation();
+		for (int row = currLoc.getRow() - 1; row <= currLoc.getRow() + 1; row++) {
+			for (int col = currLoc.getCol() - 1; col <= currLoc.getCol() + 1; col++) {
+				Location loc = new Location(row, col);
+				if (!loc.equals(currLoc) && grid.isValid(loc) && grid.get(loc) == null) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	private void teleport() {
+		Grid grid = getGrid();
+		Number_DanielGerblick lowestNumber = number;
+		int lowestVal = number.getNum();
+		Location lowestLoc = getLocation();
+		for (int row = 0; row < grid.getNumRows(); row++) {
+			for (int col = 0; col < grid.getNumCols(); col++) {
+				Location loc = new Location(row, col);
+				Actor actor = (Actor) grid.get(loc);
+				if (!loc.equals(getLocation()) && actor == null) {
+					moveTo(loc);
+					return;
+				} else if (!loc.equals(getLocation()) && actor instanceof Number_DanielGerblick) {
+					Number_DanielGerblick currentNumber = (Number_DanielGerblick) actor;
+					// lowestNumber = currentNumber.getNum() < lowestNumber.getNum() ? currentNumber
+					// : lowestNumber;
+					if (lowestVal < currentVal.getNum()) {
+
+					}
+				}
+			}
+		}
+		if (lowestNumber.getGrid() == null)
+			System.out.println("asdfasdfasdfasdf");
+		moveTo(lowestNumber.getLocation());
+	}
+
+}

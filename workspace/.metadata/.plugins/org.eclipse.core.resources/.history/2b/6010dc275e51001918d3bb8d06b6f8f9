@@ -1,0 +1,20 @@
+package gridworld;
+
+import info.gridworld.actor.Critter;
+import info.gridworld.grid.Grid;
+
+public class ThanosCritter extends Critter {
+	public ThanosCritter() {
+		
+	}
+	
+	public void putSelfInGrid(Grid grid) {
+		grid.a
+	}
+}
+
+class InfinityRock extends Rock {
+	public InfinityRock(Color c) {
+		super(c);
+	}
+}

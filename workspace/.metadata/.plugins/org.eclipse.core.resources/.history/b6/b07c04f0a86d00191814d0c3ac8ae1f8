@@ -1,0 +1,208 @@
+package chess;
+
+import java.awt.Image;
+import java.awt.Point;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.swing.JPanel;
+
+public abstract class GamePiece {
+	//https://en.wikipedia.org/wiki/Chess_symbols_in_Unicode
+		
+	private boolean team; // true: Black, false: White
+	private int x;
+	private int y;
+	private int value;
+	private int moved;
+	private boolean lastMoved;
+	private boolean takenTesting;
+	protected static JPanel masterPanel;
+	public static Board board;
+	
+	public boolean getTeam() { return team; }
+	
+	public int getX() { return x; }
+	public void setX(int x) { this.x = x; }
+	
+	public int getY() { return y; }
+	public void setY(int y) { this.y = y; }
+	
+	public int getValue() { return value; }
+	public void setValue(int value) { this.value = value; }
+	
+	public int getMoved() { return moved; }
+	public void setMoved(int moved) { this.moved = moved; }
+	public void incrementMoved() { moved++; }
+	
+	public boolean isLastMoved() { return lastMoved; }
+	public void setLastMoved(boolean lastMoved) { this.lastMoved = lastMoved; }
+	
+	public boolean isTakenTesting() { return takenTesting; }
+	public void setTakenTesting(boolean takenTesting) { this.takenTesting = takenTesting; }
+
+	public static void setMasterPanel(JPanel panel) { masterPanel = panel; }
+	
+	public GamePiece(int x, int y, boolean team) {
+		this.x = x;
+		this.y = y;
+		this.team = team;
+		takenTesting = false;
+		lastMoved = false;
+		moved = 0;
+	}
+	
+	public abstract String getChar();
+	public abstract List<GameMove> getMoves();
+	
+	public List<GameMove> getLegalMoves() {
+		int startX = x;
+		int startY = y;
+		List<GameMove> moves = getMoves();
+		List<GameMove> legalMoves = new ArrayList<GameMove>();
+
+		if (moves != null) {
+			for (GameMove move : moves) {
+				testTransform(move);
+				if (!board.testCheck(team))
+					legalMoves.add(move);
+				x = startX;
+				y = startY;
+			}
+		}
+		return legalMoves;
+	}
+
+	
+	public Point getBoardPos(int SPACE_SIZE) {
+		Point p = new Point (0, 0);
+		p.x = x * SPACE_SIZE;
+		p.y = y * SPACE_SIZE + SPACE_SIZE;
+		return p;
+	}
+	
+	public boolean posEquals(int x, int y) {
+		return x == this.x && y == this.y;
+	}
+	
+	public boolean posEquals(GamePiece other) {
+		return other.x == this.x && other.y == this.y;
+	}
+	
+	public void transform(GameMove move) {
+		
+		GamePiece target = board.getPieceRelTo(this, move);
+		if (target != null) {
+			target = new DeadPiece(target);
+			System.out.println("Taking piece");
+		}
+		
+		x += move.deltaX;
+		y += move.deltaY;
+		
+		moved++;
+		lastMoved = true;
+	}
+	
+	public void testTransform(GameMove move) {
+		for (int i = 0; i < board.pieces.length; i++)
+			board.pieces[i].takenTesting = false;
+		GamePiece target = board.getPieceRelTo(this, move);
+		if (target != null)
+			target.takenTesting = true;
+		x += move.deltaX;
+		y += move.deltaY;
+	}
+	
+	public List<GameMove> addMove(List<GameMove> moves, GameMove move) {
+		GamePiece target = getPieceRelativeTo(move);
+		if (target == null || target.team != team)
+			moves.add(move);
+		return moves;
+	}
+	
+	public GamePiece getPieceRelativeTo(GameMove move) {
+		return board.getPieceAtPos(move.getX(x), move.getY(y));
+	}
+	
+	public String toString() {
+		return String.format("%s at (%d, %d)", getClass().getSimpleName(), x, y);
+	}
+
+	/*
+	public static boolean testCheck(GamePiece[] pieces, boolean team) {
+		List<GameMove> moves;
+		for (GamePiece piece : pieces) {
+			if (piece.team != team && piece.value != 0 && !piece.takenTesting) {
+				moves = piece.getMoves(pieces);
+				if (moves != null) {
+					for (GameMove move : moves) {
+						int index = getPieceFromPos(pieces, move.getX(piece.x), move.getY(piece.y));
+						if (index != -1 && pieces[index] instanceof King && !pieces[index].takenTesting) 
+							return true;
+					}
+				}
+			} else if (piece instanceof King) {
+				moves = piece.getMoves(pieces);
+				if (moves != null) {
+					for (GameMove move : moves) {
+						int index = getPieceFromPos(pieces, move.getX(piece.x), move.getY(piece.y));
+						if (index != -1 && pieces[index] instanceof King && !pieces[index].takenTesting) 
+							return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+	*/
+	public static boolean testCheckmate(boolean team) {
+		for (GamePiece piece : board.pieces) {
+			if (piece.team == team) {
+				List<GameMove> moves = piece.getMoves();			
+				//moves = piece.removeIllegal(pieces, moves);
+				//System.out.printf("%s %s at (%d, %d): %d moves%n", piece.team ? "Black" : "White", piece.getClass().getSimpleName(), piece.x, piece.y, moves.size());
+				if (!piece.getLegalMoves().isEmpty())
+					return false;
+			}
+		}
+
+		return true;
+	}
+	
+	
+	public static int getPieceFromPos(int x, int y) {
+		for (int i = 0; i < board.pieces.length; i++) {
+			if (board.pieces[i].posEquals(x, y) && !board.pieces[i].takenTesting) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	
+	public static int getPieceIndex(GamePiece piece) {
+		for (int i = 0; i < board.pieces.length; i++)
+			if (board.pieces[i].posEquals(piece))
+				return i;
+		return -1;
+	}
+	
+	public static GamePiece[] concat(GamePiece[] first, GamePiece[] second) {
+		GamePiece[] concat = new GamePiece[first.length + second.length];
+		for (int i = 0; i < first.length; i++)
+			concat[i] = first[i];
+		for (int i = 0; i < second.length; i++)
+			concat[i + first.length] = second[i];
+		return concat;
+	}
+	
+	public static void printPieceInfo(GamePiece[] pieces) {
+		for (GamePiece piece : pieces) {
+			System.out.printf("%s %s at (%d, %d)%n", piece.team ? "Black" : "White", piece.getClass().getSimpleName(), piece.x, piece.y);
+		}
+		System.out.println();
+
+	}
+}

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>LetterRobot Template Creator</h1>
+
+<input type="checkbox" id="00">
+<input type="checkbox" id="01">
+<input type="checkbox" id="02">
+<input type="checkbox" id="03">
+<br>
+
+<input type="checkbox" id="10">
+<input type="checkbox" id="11">
+<input type="checkbox" id="12">
+<input type="checkbox" id="13">
+<br>
+
+<input type="checkbox" id="20">
+<input type="checkbox" id="21">
+<input type="checkbox" id="22">
+<input type="checkbox" id="23">
+<br>
+
+<input type="checkbox" id="30">
+<input type="checkbox" id="31">
+<input type="checkbox" id="32">
+<input type="checkbox" id="33">
+<br>
+
+<input type="checkbox" id="40">
+<input type="checkbox" id="41">
+<input type="checkbox" id="42">
+<input type="checkbox" id="43">
+<br>
+
+
+<button onclick="myFunction()">Create</button>
+<button onclick="clearBox()">Clear</button>
+
+
+<p id="demo"></p>
+
+<script>
+function myFunction() {
+	var a = [];
+    var i;
+	for (i = 0; i < 5; i++) {
+    	var b = [];
+        var j;
+        for (j = 0; j < 4; j++) {
+        	b.push(document.getElementById(i.toString() + j.toString()).checked);
+        }
+        a.push(b.reduce((res, x) => res << 1 | x).toString(16));
+	}
+    var out = document.getElementById("demo");
+   	out.innerHTML = "0x1" + a[4] + a[3] + a[2] + a[1] + a[0];
+}
+
+function clearBox() {
+	var i;
+	for (i = 0; i < 5; i++) {
+        var j;
+        for (j = 0; j < 4; j++) {
+        	document.getElementById(i.toString() + j.toString()).checked = false;
+        }
+	}
+}
+</script>
+
+</body>
+</html>
